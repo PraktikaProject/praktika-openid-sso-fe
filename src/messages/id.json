@@ -1,12 +1,13 @@
 {
-  "HomePage": {
-    "title": "Home Indo"
-  },
   "LocaleSwitcer": {
-    "label": "Ganti Bahasa",
-    "locale": "{locale, select, en {en} id {id} other {Unknown}}"
+    "label": "ID"
   },
-  "RootLayout": {
-    "title": "Home ID"
+
+  "LoginForm": {
+    "username": "MyITS ID",
+    "password": "Kata Sandi",
+    "submit": "Lanjutkan",
+    "error": "Nama pengguna atau kata sandi salah",
+    "forgotPassword": "Lupa Kata Sandi?"
   }
 }

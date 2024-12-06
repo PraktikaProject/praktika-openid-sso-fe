@@ -1,12 +1,13 @@
 {
-  "HomePage": {
-    "title": "Home En"
-  },
   "LocaleSwitcer": {
-    "label": "Change Language",
-    "locale": "{locale, select, en {en} id {id} other {Unknown}}"
+    "label": "EN"
   },
-  "RootLayout": {
-    "title": "Home EN"
+
+  "LoginForm": {
+    "username": "MyITS ID",
+    "password": "Password",
+    "submit": "Continue",
+    "error": "Invalid username or password",
+    "forgotPassword": "Forgot Password?"
   }
 }

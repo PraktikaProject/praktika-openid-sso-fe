@@ -1,11 +1,10 @@
+import { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { ReactNode } from 'react';
 
 import '@/styles/globals.css';
-
-import { ThemeProvider } from '@/components/ThemeProvider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -19,6 +18,10 @@ type RootLayoutProps = {
   };
 };
 
+export const metadata: Metadata = {
+  title: 'Sign in • myITS SSO',
+};
+
 export default async function RootLayout({
   children,
   params: { locale },
@@ -28,16 +31,9 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={poppins.className}>
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            {children}
-          </NextIntlClientProvider>
-        </ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );
