@@ -1,0 +1,12 @@
+{
+  "HomePage": {
+    "title": "Home En"
+  },
+  "LocaleSwitcer": {
+    "label": "Change Language",
+    "locale": "{locale, select, en {en} id {id} other {Unknown}}"
+  },
+  "RootLayout": {
+    "title": "Home EN"
+  }
+}
