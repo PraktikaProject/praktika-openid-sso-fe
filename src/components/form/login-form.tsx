@@ -17,9 +17,11 @@ import {
 import { Input } from '@/components/ui/input';
 
 import LocaleSwitcher from '../button/locale-switcer';
-
 const formLoginSchema = z.object({
-  email: z.string().min(8, { message: 'Email must be at least 8 characters' }),
+  email: z
+    .string()
+    .email({ message: 'Please enter a valid email' })
+    .min(8, { message: 'Email must be at least 8 characters' }),
   password: z
     .string()
     .min(8, { message: 'Password must be at least 8 characters' }),
@@ -28,10 +30,10 @@ const formLoginSchema = z.object({
 type UserFormValue = z.infer<typeof formLoginSchema>;
 
 interface IUserAuthFormProps {
-  readonly redirect_url: string;
+  oauthUrl: string;
 }
 
-export default function LoginForm({ redirect_url }: IUserAuthFormProps) {
+export default function LoginForm({ oauthUrl }: IUserAuthFormProps) {
   const t = useTranslations('LoginForm');
   const [loading, setLoading] = useState(false);
 
@@ -47,15 +49,36 @@ export default function LoginForm({ redirect_url }: IUserAuthFormProps) {
 
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true);
+
+    const formData = new URLSearchParams();
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+
     try {
-      await axios.post(``, data);
-      window.location.href = redirect_url;
+      const response = await axios.post(oauthUrl, formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+      const uri = response.data.data.uri;
+      if (uri) {
+        const newWindow = window.open(uri, '_blank');
+        if (newWindow) {
+          newWindow.focus();
+        } else {
+          alert('Popup blocked! Please allow popups for this page.');
+        }
+      } else {
+        alert('No URI found in the response.');
+      }
     } catch (error) {
       setLoading(false);
+      alert(`An error occurred. Please try again later, ${error}`);
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-5'>
@@ -94,7 +117,7 @@ export default function LoginForm({ redirect_url }: IUserAuthFormProps) {
         />
         <Button
           disabled={loading}
-          className='ml-auto w-full bg-[#f1c40f] text-[#013880]'
+          className='ml-auto w-full bg-[#f1c40f] text-[#013880] hover:bg-[#f39c12] hover:text-[#013880]'
           type='submit'
         >
           {loading ? 'Loading...' : t('submit')}

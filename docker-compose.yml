@@ -7,9 +7,9 @@ services:
       - .:/app
       - /app/node_modules
     ports:
-      - "3001:3000"
+      - '3001:3000'
     networks:
-      - my_network
+      - praktika_network
 
 networks:
   praktika_network:

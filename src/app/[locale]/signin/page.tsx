@@ -6,21 +6,17 @@ import LoginForm from '@/components/form/login-form';
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
-  const redirectUri = searchParams.get('redirect_uri') || '/';
-  const responseType = searchParams.get('response_type');
-  const clientId = searchParams.get('client_id');
-  const nonce = searchParams.get('nonce');
-  const state = searchParams.get('state');
-  const scope = searchParams.get('scope');
 
-  const queryParams = {
-    response_type: responseType,
-    redirect_uri: redirectUri,
-    client_id: clientId,
-    nonce: nonce,
-    state: state,
-    scope: scope,
-  };
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  const client_id = searchParams.get('client_id') || '';
+  const redirect_uri = searchParams.get('redirect_uri') || '';
+  const scope = searchParams.get('scope') || '';
+  const response_type = searchParams.get('response_type') || '';
+  const state = searchParams.get('state') || '';
+  const nonce = searchParams.get('nonce') || '';
+
+  const oauthUrl = `${baseUrl}/api/v1/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(redirect_uri)}&scope=${encodeURIComponent(scope)}&response_type=${response_type}&state=${state}&nonce=${nonce}`;
 
   return (
     <div className='flex min-h-screen flex-col items-center justify-center bg-[#013880]'>
@@ -41,7 +37,8 @@ export default function LoginPage() {
             className='h-8'
           />
         </div>
-        <LoginForm redirect_url={String(queryParams.redirect_uri)} />
+
+        <LoginForm oauthUrl={oauthUrl} />
       </section>
       <div className='flex justify-center text-sm text-white'>
         <h3 className='pt-2 text-xs'>
