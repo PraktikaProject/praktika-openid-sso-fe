@@ -3,9 +3,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
+import LocaleSwitcher from '@/components/button/locale-switcer';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -16,7 +17,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import LocaleSwitcher from '../button/locale-switcer';
 const formLoginSchema = z.object({
   email: z
     .string()
@@ -33,23 +33,48 @@ interface IUserAuthFormProps {
   oauthUrl: string;
 }
 
+interface FormInputProps {
+  label: string;
+  type?: 'text' | 'password';
+  placeholder: string;
+  field: {
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur: () => void;
+  };
+  loading: boolean;
+}
+
+const FormInput = ({
+  type = 'text',
+  placeholder,
+  field,
+  loading,
+}: FormInputProps) => (
+  <FormItem>
+    <FormControl>
+      <Input
+        {...field}
+        type={type}
+        placeholder={placeholder}
+        disabled={loading}
+      />
+    </FormControl>
+    <FormMessage />
+  </FormItem>
+);
+
 export default function LoginForm({ oauthUrl }: IUserAuthFormProps) {
   const t = useTranslations('LoginForm');
   const [loading, setLoading] = useState(false);
 
-  const defaultValues = {
-    email: '',
-    password: '',
-  };
-
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formLoginSchema),
-    defaultValues,
+    defaultValues: { email: '', password: '' },
   });
 
-  const onSubmit = async (data: UserFormValue) => {
+  const onSubmit: SubmitHandler<UserFormValue> = async (data) => {
     setLoading(true);
-
     const formData = new URLSearchParams();
     formData.append('email', data.email);
     formData.append('password', data.password);
@@ -60,20 +85,17 @@ export default function LoginForm({ oauthUrl }: IUserAuthFormProps) {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
+
       const uri = response.data.data.uri;
       if (uri) {
         const newWindow = window.open(uri, '_blank');
-        if (newWindow) {
-          newWindow.focus();
-        } else {
+        newWindow?.focus() ||
           alert('Popup blocked! Please allow popups for this page.');
-        }
       } else {
         alert('No URI found in the response.');
       }
     } catch (error) {
-      setLoading(false);
-      alert(`An error occurred. Please try again later, ${error}`);
+      alert(`An error occurred. Please try again later: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -81,38 +103,33 @@ export default function LoginForm({ oauthUrl }: IUserAuthFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-5'>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='w-full space-y-5 transition-shadow'
+      >
         <FormField
           control={form.control}
           name='email'
           render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  placeholder={t('username')}
-                  disabled={loading}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+            <FormInput
+              label='Email'
+              placeholder={t('username')}
+              field={field}
+              loading={loading}
+            />
           )}
         />
         <FormField
           control={form.control}
           name='password'
           render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  type='password'
-                  placeholder={t('password')}
-                  disabled={loading}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+            <FormInput
+              label='Password'
+              type='password'
+              placeholder={t('password')}
+              field={field}
+              loading={loading}
+            />
           )}
         />
         <Button
@@ -123,7 +140,7 @@ export default function LoginForm({ oauthUrl }: IUserAuthFormProps) {
           {loading ? 'Loading...' : t('submit')}
         </Button>
         <div className='flex justify-between gap-2 pt-2 text-white'>
-          <h3 className=''>{t('forgotPassword')}</h3>
+          <h3>{t('forgotPassword')}</h3>
           <LocaleSwitcher />
         </div>
       </form>

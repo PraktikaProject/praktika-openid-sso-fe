@@ -3,9 +3,7 @@
 import { useLocale } from 'next-intl';
 import { useTransition } from 'react';
 
-import { usePathname, useRouter } from '@/navigation'; // Importing useRouter from next/navigation
-
-import { Button } from '../ui/button';
+import { usePathname, useRouter } from '@/navigation';
 
 export default function LocaleSwitcher() {
   const locale = useLocale();
@@ -20,12 +18,11 @@ export default function LocaleSwitcher() {
   };
 
   return (
-    <Button
-      variant='ghost'
+    <button
       className='text-white'
       onClick={() => onSelectChange(locale === 'id' ? 'en' : 'id')}
     >
       {locale === 'id' ? 'EN' : 'ID'}
-    </Button>
+    </button>
   );
 }
